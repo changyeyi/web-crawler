@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author :  wzj
@@ -32,9 +29,9 @@ public class RequestHandlerTest {
         Map<String, Integer> map = obtainIp.proxyIp();
         Set<Map.Entry<String, Integer>> entrySet = map.entrySet();
         ArrayList<Map.Entry<String, Integer>> arrayList = new ArrayList<>(entrySet);
-        int size=0;
         String url="https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false";
-        for (int i=0;i<500;i++){
+        for (int i=0;i<100;i++){
+            System.out.println("-------------   "+i+"   ---------------");
             List<org.apache.http.NameValuePair> list=new ArrayList<>();
             list.add(new BasicNameValuePair("kd","java大数据"));
             if(i==0){
@@ -44,18 +41,15 @@ public class RequestHandlerTest {
                 list.add(new BasicNameValuePair("first","false"));
                 list.add(new BasicNameValuePair("pn",i+1+""));
             }
-            if(size==entrySet.size())size=0;
             String content ;
             do{
-                content=requestHandler.post(url, arrayList.get(size).getKey(), arrayList.get(size).getValue(), list);
-                if(content==null){
-                    arrayList.remove(size);
-                }
-                size++;
+                content=requestHandler.post(url, list);
             }while(content==null);
-
+            while(i==101){
+                System.out.println();
+            }
             lagouParse.parse(content);
-
+            Thread.sleep(new Random().nextInt(1000));
         }
     }
 }

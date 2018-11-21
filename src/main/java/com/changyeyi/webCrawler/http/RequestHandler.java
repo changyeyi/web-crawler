@@ -60,22 +60,18 @@ public class RequestHandler {
         return null;
     }
 
-    public String post(String url,String ip,Integer port,List<NameValuePair> formData){
+    public String post(String url,List<NameValuePair> formData){
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 
         HttpPost httpPost = new HttpPost(url);
 
-        HttpHost proxy = new HttpHost(ip, port);
-        RequestConfig config = RequestConfig.custom().setProxy(proxy).setConnectTimeout(3000).
-                setSocketTimeout(3000).build();
-        httpPost.setConfig(config);
         httpPost.setHeader("Accept", "application/json, text/javascript, */*; q=0.01");
         httpPost.setHeader("Accept-Encoding", "gzip, deflate, br");
         httpPost.setHeader("Accept-Language", "zh-CN,zh;q=0.9");
         httpPost.setHeader("Connection", "keep-alive");
 //        httpPost.setHeader("Content-Length", "23");
         httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-        httpPost.setHeader("Cookie", "_ga=GA1.2.2085062207.1542700058; _gid=GA1.2.620205390.1542700058; user_trace_token=20181120154738-8d2e8ccb-ec98-11e8-ab18-525400f775ce; LGUID=20181120154738-8d2e90bf-ec98-11e8-ab18-525400f775ce; index_location_city=%E5%85%A8%E5%9B%BD; JSESSIONID=ABAAABAAAGGABCB71C6F1972E455467E8489F5208C6451E; LGSID=20181121143051-fdc3bcfb-ed56-11e8-8a9a-5254005c3644; TG-TRACK-CODE=index_navigation; X_HTTP_TOKEN=2126b5f3299054fc807e3ff495682ff6; sajssdk_2015_cross_new_user=1; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2216734fba6fea17-0c3c3a6c0a6263-5701732-2073600-16734fba6ff295%22%2C%22%24device_id%22%3A%2216734fba6fea17-0c3c3a6c0a6263-5701732-2073600-16734fba6ff295%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E7%9B%B4%E6%8E%A5%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22%22%2C%22%24latest_referrer_host%22%3A%22%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC_%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%22%7D%7D; Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1542700058,1542781852,1542782233,1542782237; _gat=1; Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1542783324; LGRID=20181121145523-6b438fd4-ed5a-11e8-b143-525400f775ce; SEARCH_ID=4c78ab36b7944cb79d9908b6adc182fa");
+        httpPost.setHeader("Cookie", "JSESSIONID=ABAAABAAADEAAFI9612FBE72694F57591E0C4CF0E047D05; Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1542798240; _ga=GA1.2.1633207753.1542798240; _gid=GA1.2.1093258419.1542798240; user_trace_token=20181121190358-24fb9399-ed7d-11e8-8abb-5254005c3644; LGSID=20181121190358-24fb9632-ed7d-11e8-8abb-5254005c3644; PRE_UTM=; PRE_HOST=www.baidu.com; PRE_SITE=https%3A%2F%2Fwww.baidu.com%2Flink%3Furl%3Db0wvx-5anAN2vM12Ft562D2_0EAIMJOoRi845wFUiO3%26wd%3D%26eqid%3Dcc481889000424f9000000045bf53b9a; PRE_LAND=https%3A%2F%2Fwww.lagou.com%2F; LGUID=20181121190358-24fb97cc-ed7d-11e8-8abb-5254005c3644; index_location_city=%E5%85%A8%E5%9B%BD; TG-TRACK-CODE=index_navigation; _gat=1; LGRID=20181121190650-8bed3abb-ed7d-11e8-b2eb-52540 0f775ce; Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1542798413; SEARCH_ID=2832f6179ae544bb8b1fe080c0968642");
         httpPost.setHeader("Host", "www.lagou.com");
         httpPost.setHeader("Origin", "https://www.lagou.com");
         httpPost.setHeader("Referer", "https://www.lagou.com/jobs/list_java?city=%E5%85%A8%E5%9B%BD&cl=false&fromSearch=true&labelWords=&suginput=");
@@ -90,10 +86,11 @@ public class RequestHandler {
             CloseableHttpResponse response = httpClient.execute(httpPost);
             if(response.getStatusLine().getStatusCode()!=200){
                 log.error("url:"+url+",code:"+response.getStatusLine().getStatusCode());
+                return null;
             }
             return EntityUtils.toString(response.getEntity(), "gbk");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
             return null;
         } finally {
             try {

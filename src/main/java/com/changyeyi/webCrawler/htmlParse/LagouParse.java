@@ -37,16 +37,14 @@ public class LagouParse {
      * 输出数据前十的数据
      */
     private void printCityMap() {
-        int limit=cityMap.size()>10?10:cityMap.size();
         Set<Map.Entry<String, Integer>> entries = cityMap.entrySet();
-        Map<Integer,String> map=new HashMap<>(entries.size());
+        List<Integer> count = entries.stream().map(Map.Entry::getValue).sorted((o1, o2) -> o2 - o1).collect(Collectors.toList());
+        Integer limit = count.get(count.size() / 3)>20?count.get(count.size() / 3):20;
         for (Map.Entry<String, Integer> entry : entries) {
-            map.put(entry.getValue(),entry.getKey());
-        }
-        List<Integer> count = entries.stream().map(entry -> entry.getValue()).collect(Collectors.toList());
-        count.sort((o1, o2) -> o2-o1);
-        for (int i=0;i<limit;i++){
-            System.out.print(map.get(count.get(i))+":"+count.get(i)+"|");
+            if(entry.getValue()>limit){
+
+                System.out.print(entry.getKey()+":"+entry.getValue()+"|");
+            }
         }
         System.out.println();
     }
