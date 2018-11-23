@@ -1,6 +1,6 @@
 package com.changyeyi.webCrawler.http;
 
-import com.changyeyi.webCrawler.ProxyIP.ObtainIp;
+import com.changyeyi.webCrawler.proxyIP.ObtainIp;
 import com.changyeyi.webCrawler.htmlParse.LagouParse;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.Test;
@@ -26,11 +26,8 @@ public class RequestHandlerTest {
     private ObtainIp obtainIp;
     @Test
     public void test() throws InterruptedException {
-        Map<String, Integer> map = obtainIp.proxyIp();
-        Set<Map.Entry<String, Integer>> entrySet = map.entrySet();
-        ArrayList<Map.Entry<String, Integer>> arrayList = new ArrayList<>(entrySet);
         String url="https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false";
-        for (int i=0;i<100;i++){
+        for (int i=0;i<200;i++){
             System.out.println("-------------   "+i+"   ---------------");
             List<org.apache.http.NameValuePair> list=new ArrayList<>();
             list.add(new BasicNameValuePair("kd","java大数据"));
@@ -42,13 +39,14 @@ public class RequestHandlerTest {
                 list.add(new BasicNameValuePair("pn",i+1+""));
             }
             String content ;
+            boolean parse;
             do{
-                content=requestHandler.post(url, list);
-            }while(content==null);
-            while(i==101){
-                System.out.println();
-            }
-            lagouParse.parse(content);
+//                HttpHost httpHost = new HttpHost("59.44.43.198",80);
+
+                content=requestHandler.post(url,list,null);
+                parse = lagouParse.parse(content);
+            }while(content==null||parse==false);
+
             Thread.sleep(new Random().nextInt(1000));
         }
     }

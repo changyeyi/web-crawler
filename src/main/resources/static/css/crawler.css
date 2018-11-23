@@ -1,0 +1,62 @@
+#queryContainer{
+    height:50px;
+    width:auto;
+    position:absolute;
+    top: 5%;
+    right:5%;
+}
+label{
+    float:left;
+    margin-left: 8px;
+}
+input{
+    width:150px;
+    height: 20px;
+    border:1px solid grey;
+    border-radius: 4px;
+    box-shadow: 2px 2px 1px grey;
+    float: left;
+    margin-left: 5px;
+}
+button{
+    width: 70px;
+    height: 25px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px grey;
+    float: left;
+    margin-left: 4px;
+}
+#echartContainer{
+    width: 100%;
+    position:absolute;
+    top:13%;
+    left: 0;
+}
+.echarts{
+    width:45%;
+    height: 400px;
+    float: left;
+    margin-left: 3%;
+}
+
+
+#blindage
+{
+    left: 0;
+    top: 0;
+    width:100%;
+    height:100%;
+    opacity:0.5;
+    background-color: grey;
+    position: absolute;
+    z-index: 999;
+    display: none;
+}
+#blindage img{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 999;
+
+}

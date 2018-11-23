@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>crawler</title>
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+    <script src="../js/echarts.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/crawler.css"/>
+</head>
+<body>
+    <div id="queryContainer">
+        <label for="kd">kd:</label><input id="kd" value="java"/>
+        <label for="pn">pn:</label><input id="pn" value="10"/>
+        <label for="city">city:</label><input id="city" value="杭州"/>
+        <button onclick="crawlerData()">start</button>
+    </div>
+    <div id="echartContainer"></div>
+    <div id="blindage" >
+        <img src="/image/loading.gif"/>
+    </div>
+</body>
+<script type="application/javascript">
+
+    function crawlerData() {
+        //获取查询条件
+        var pn = document.getElementById("pn").value;
+        if(pn>200){
+            alert("pn值不可大于200");
+            return;
+        }
+        var kd = document.getElementById("kd").value;
+        var city=document.getElementById("city").value;
+        //ajax获取数据
+        var url = "http://localhost:4444/lagou/city?kd="+kd+"&pn="+pn+"&city="+city;
+        //设置掩体
+        document.getElementById("blindage").style.display="block";
+        loadXMLDoc(url);
+
+    }
+
+    function loadXMLDoc(url) {
+        var xmlhttp;
+        if (window.XMLHttpRequest) {
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                document.getElementById("blindage").style.display="none";
+                var city = JSON.parse(xmlhttp.responseText)[0];
+                var salary = JSON.parse(xmlhttp.responseText)[1];
+                document.getElementById("echartContainer").innerHTML="";
+                initCity(city,"city");
+                for(var cityName in salary){
+                    initCity(salary[cityName],cityName);
+                }
+            }
+        };
+        xmlhttp.open("GET",url,true);
+        xmlhttp.send();
+    }
+
+    function initCity(map,text){
+        var parent = document.getElementById("echartContainer");
+        var newElement = document.createElement("div");
+        newElement.className="echarts";
+        parent.appendChild(newElement)
+        var cityEcharts = echarts.init(newElement);
+        var xAxis=[];
+        var series=[];
+        for(var key in map){
+            xAxis.push(key);
+            series.push(map[key]);
+        }
+        var option = {
+            color: ['#3398DB'],
+            title:{
+                text:text
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : xAxis,
+                    axisTick: {
+                        alignWithLabel: true
+                    }
+                }
+            ],
+            dataZoom: [{
+                type: 'inside',
+                start: 0
+            }],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'招聘数',
+                    type:'bar',
+                    data:series
+                }
+            ]
+        };
+        cityEcharts.setOption(option);
+    }
+</script>
+</html>

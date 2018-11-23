@@ -60,11 +60,14 @@ public class RequestHandler {
         return null;
     }
 
-    public String post(String url,List<NameValuePair> formData){
+    public String post(String url,List<NameValuePair> formData,HttpHost host){
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 
         HttpPost httpPost = new HttpPost(url);
-
+        if(host!=null){
+            RequestConfig build = RequestConfig.custom().setProxy(host).setConnectTimeout(3000).setSocketTimeout(3000).build();
+            httpPost.setConfig(build);
+        }
         httpPost.setHeader("Accept", "application/json, text/javascript, */*; q=0.01");
         httpPost.setHeader("Accept-Encoding", "gzip, deflate, br");
         httpPost.setHeader("Accept-Language", "zh-CN,zh;q=0.9");

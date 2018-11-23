@@ -1,59 +1,89 @@
 package com.changyeyi.webCrawler.htmlParse;
 
-import com.google.gson.Gson;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.changyeyi.webCrawler.util.JsonUtils;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 拉勾网招聘信息解析
+ *
  * @author :  wzj
  * @date :Created in 2018/11/21
  */
+@Data
+@Slf4j
 @Component
 public class LagouParse {
-    private Map<String,Integer> cityMap=new HashMap<>();
-    @Autowired
-    private Gson gson;
+    private Map<String, Integer> cityMap;
+    private Map<String, Map<String, Integer>> salaryMap;
+    private String cityName;
 
-    public void parse(String content){
-        Map map =null;
-        try{
-            map = gson.fromJson(content, Map.class);
-        }catch (Exception e){
-            System.out.println(content);
+    public boolean parse(String content) {
+        //从JSON中获取指定数据
+        String[] args = new String[]{"content", "positionResult", "result"};
+        Object data = JsonUtils.recursion(content, args);
+        List<Map<String, String>> list;
+        if (data instanceof List) {
+            list = (List<Map<String, String>>) data;
+        } else {
+            return false;
         }
-        List<Map<String,String>> list= (List<Map<String,String>>)objToMap(objToMap(map.get("content")).get("positionResult")).get("result");
-        for (Map<String, String> positionInfo : list) {
-            String city = positionInfo.get("city");
-            cityMap.merge(city, 1, (a, b) -> a + b);
-        }
-        printCityMap();
+        //进行数据分析统计
+        analysisAndCount(list);
+        //数据输出
+//        printCityMap();
+        return true;
     }
 
     /**
-     * 输出数据前十的数据
+     * 数据分析与统计
+     *
+     * @param list 需要分析的数据
+     */
+    private void analysisAndCount(List<Map<String, String>> list) {
+        for (Map<String, String> positionInfo : list) {
+            String city = positionInfo.get("city");
+            String salary = positionInfo.get("salary");
+            if ((!StringUtils.isEmpty(cityName)) && cityName.contains(city)) {
+                salaryGroup(city, salary);
+            }
+            cityMap.merge(city, 1, (a, b) -> a + b);
+        }
+    }
+
+    /**
+     * 按薪资分类
+     *
+     * @param city   招聘城市
+     * @param salary 找平薪水
+     */
+    private void salaryGroup(String city, String salary) {
+        Map<String, Integer> salaryCount = salaryMap.get(city);
+        if(salaryCount==null){
+            salaryCount=new HashMap<>();
+            salaryCount.put(salary,1);
+            salaryMap.put(city,salaryCount);
+        }else {
+            salaryCount.put(salary,salaryCount.get(salary)==null?1:salaryCount.get(salary)+1);
+        }
+    }
+
+    /**
+     * 输出数据
      */
     private void printCityMap() {
-        Set<Map.Entry<String, Integer>> entries = cityMap.entrySet();
-        List<Integer> count = entries.stream().map(Map.Entry::getValue).sorted((o1, o2) -> o2 - o1).collect(Collectors.toList());
-        Integer limit = count.get(count.size() / 3)>20?count.get(count.size() / 3):20;
-        for (Map.Entry<String, Integer> entry : entries) {
-            if(entry.getValue()>limit){
-
-                System.out.print(entry.getKey()+":"+entry.getValue()+"|");
-            }
+        Set<String> keySet = cityMap.keySet();
+        for (String key : keySet) {
+            System.out.print(key + ":" + cityMap.get(key) + "|");
         }
         System.out.println();
     }
 
-    private Map objToMap(Object obj){
-        if(obj instanceof Map){
-            return (Map)obj;
-        }else {
-            throw new RuntimeException("类型转换失败");
-        }
-    }
 }

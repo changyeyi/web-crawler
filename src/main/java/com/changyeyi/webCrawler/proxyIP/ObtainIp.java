@@ -1,4 +1,4 @@
-package com.changyeyi.webCrawler.ProxyIP;
+package com.changyeyi.webCrawler.proxyIP;
 
 import com.changyeyi.webCrawler.htmlParse.ProxyIpParse;
 import com.changyeyi.webCrawler.http.RequestHandler;
